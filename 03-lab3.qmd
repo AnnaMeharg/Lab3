@@ -3,3 +3,76 @@ title: "03-lab3"
 format: html
 ---
 
+## Q1
+```{r, message=FALSE}
+library(stringr)
+log <- readLines("outputs/flye_output/flye.log")
+start <- grep("Assembly statistics:", log)
+stats <- log[(start+2):(start+7)]
+stats <- str_replace_all(stats, "\t", "")
+stats <- strsplit(stats, ":")
+stats_df <- as.data.frame(do.call(rbind, stats))
+print(stats_df)
+```
+
+Since the total length is only 10Mb long, and the expected is 12Mb, it does not seem to be the complete genome. The mean coverage is only 6 which is very low 
+
+
+## Q2
+The BUSCO scores were: C:42.8%[S:42.7%,D:0.1%],F:0.7%,M:56.6%,n:3282,E:6.6%
+These scores are not great, given that over half of the expected marker genes are missing from the assembly. 
+
+The BUSCO N50 was 26 kbp, and the flye N50 was 28,944, so 2000 bp higher than BUSCO
+
+The total length from BUSCO was 10,048,474, which is overall shorter than the flye result of 10,217,386
+
+## Q3
+The genome fraction from quast was 4.773%, which is significantly lower than the 42.8% completeness given by BUSCO
+
+The duplication ratio was 1.019
+
+There were 2 misassemblies with a length of 102,154 bp. ??????
+
+## Q4
+```{r}
+full <- readLines("data/S288C_UCSC.fna")
+headers <- grep(">", full)
+chunk <- full[headers[1]:(headers[2]-1)]
+writeLines(chunk, "outputs/R64_chr1.fna")
+```
+
+## Q5
+```{r, message=FALSE}
+library("IRanges")
+library("GenomicRanges")
+library("Rsamtools")
+library("GenomicAlignments")
+library("Gviz")
+```
+
+```{r}
+bam_file <- "outputs/alignment.sorted.bam"
+bam <- BamFile(bam_file)
+alns <- readGAlignments(bam)
+gr_alns <- granges(alns)
+range(gr_alns)
+```
+
+```{r}
+ranges(gr_alns)
+```
+
+```{r}
+aln_track <- AnnotationTrack(gr_alns, name = "Contigs", genome = "sacCer3", chromosome = "chrI")
+axis_track <- GenomeAxisTrack()
+plotTracks(list(axis_track, aln_track),
+           from = min(start(gr_alns)),
+           to = max(end(gr_alns)),
+           main = "Contig Alignments to Chromosome 1")
+```
+
+There are only 9 contigs aligning to chromosome 1
+
+Adding up the widths of all the contigs gives us 16,476 bp. Dividing this by the total length of chromosome 1 (230 kbp) gives us 0.07% coverage. This aligns with our quast results, which showed that there was only about 4% alignment coverage in the whole genome.
+
+## Q6
