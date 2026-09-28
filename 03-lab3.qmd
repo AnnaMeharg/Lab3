@@ -51,6 +51,7 @@ library("Gviz")
 ```
 
 ```{r}
+options(ucscChromosomeNames=TRUE)
 bam_file <- "outputs/alignment.sorted.bam"
 bam <- BamFile(bam_file)
 alns <- readGAlignments(bam)
@@ -89,4 +90,18 @@ writeXStringSet(longest, filepath = "outputs/longest_contig.fasta")
 samtools view -bS outputs/cds_aln.sam > outputs/cds_aln.bam
 samtools sort outputs/cds_aln.bam -o outputs/cds_aln.sorted.bam
 samtools index outputs/cds_aln.sorted.bam
+```
+
+## Q8
+```{r}
+options(ucscChromosomeNames=FALSE)
+bam <- BamFile("outputs/cds_aln.sorted.bam")
+algn <- readGAlignments(bam)
+gr_algn <- granges(algn)
+algn_track <- AnnotationTrack(gr_algn, name = "Contig")
+axis_track <- GenomeAxisTrack()
+plotTracks(list(axis_track, algn_track), 
+           from = min(start(gr_algn)),
+           to = max(end(gr_algn)),
+           main = "Longest Contig Alignment to CDSs")
 ```
