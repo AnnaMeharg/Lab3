@@ -76,3 +76,17 @@ There are only 9 contigs aligning to chromosome 1
 Adding up the widths of all the contigs gives us 16,476 bp. Dividing this by the total length of chromosome 1 (230 kbp) gives us 0.07% coverage. This aligns with our quast results, which showed that there was only about 4% alignment coverage in the whole genome.
 
 ## Q6
+```{r, eval=FALSE}
+library(Biostrings)
+consensus <- readDNAStringSet("outputs/medaka_round2/consensus.fasta")
+longest_index <- which.max(consensus) 
+longest <- consensus[longest_index]
+writeXStringSet(longest, filepath = "outputs/longest_contig.fasta")
+```
+
+## Q7 
+```{bash, eval=FALSE}
+samtools view -bS outputs/cds_aln.sam > outputs/cds_aln.bam
+samtools sort outputs/cds_aln.bam -o outputs/cds_aln.sorted.bam
+samtools index outputs/cds_aln.sorted.bam
+```
