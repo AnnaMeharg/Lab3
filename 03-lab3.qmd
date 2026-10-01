@@ -31,7 +31,7 @@ The genome fraction from quast was 4.773%, which is significantly lower than the
 
 The duplication ratio was 1.019
 
-There were 2 misassemblies with a length of 102,154 bp. ??????
+There were 2 misassemblies with a length of 102,154 bp. Since there were very few missassmblies and a small misassembled length (only about 0.01% of the total length), it suggests that the reference genome represents this strain fairly well. The 2 misassemblies could however be the result of genetic variation in the strain that was sequenced, and not a mistake by flye, so it's possible that the reference genome doesn't cover all the genetic diversity of the species.
 
 ## Q4
 ```{r}
